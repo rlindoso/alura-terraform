@@ -7,3 +7,9 @@
       - virtualenv
       update_cache: yes
     become: yes
+  - name: installing dependencies with pip (django and django rest)
+    pip:
+      virtualenv: /home/ubuntu/rlindoso/venv
+      name:
+        - django
+        - djangorestframework
