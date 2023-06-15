@@ -24,6 +24,6 @@ resource "aws_instance" "app_test_terraform" {
   #                    nohup busybox httpd -f -p 8080 &
   #                    EOF
   tags = {
-    Name = "Terraform's instance aws"
+    Name = "Terraform Ansible Pyhton"
   }
 }
