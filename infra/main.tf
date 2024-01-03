@@ -27,3 +27,7 @@ resource "aws_key_pair" "chaveSSH" {
   key_name = var.sshKey
   public_key = file("${var.sshKey}.pub")
 }
+
+output "public_ip" {
+  value = aws_instance.app_test_terraform.public_ip
+}
