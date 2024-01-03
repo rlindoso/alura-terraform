@@ -23,3 +23,9 @@
       regexp: 'ALLOWED_HOSTS'
       line: 'ALLOWED_HOSTS = ["*"]'
       backrefs: yes
+  - name: Config data base
+    shell: '. /home/ubuntu/rlindoso/venv/bin/activate; python /home/ubuntu/rlindoso/manage.py migrate'
+  - name: Load init data
+    shell: '. /home/ubuntu/rlindoso/venv/bin/activate; python /home/ubuntu/rlindoso/manage.py loaddata clientes.json'
+  - name: 'Start server'
+    shell: '. /home/ubuntu/rlindoso/venv/bin/activate; nohup python /home/ubuntu/rlindoso/manage.py runserver 0.0.0.0:8000 &'
