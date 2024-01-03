@@ -7,3 +7,7 @@ some commands:
 * chmod 600 private-key.pem
 * ansible-playbook playbook.yml -u ubuntu --private-key private-key.pem -i hosts.yml
     * -u -> user
+
+* Create ssh keys with ssh-keygen
+    * IaC-DEV
+    * IaC-PROD
