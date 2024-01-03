@@ -3,6 +3,8 @@ module "aws-dev" {
   instance = "t2.micro"
   aws_region = "us-east-2"
   sshKey = "IaC-DEV"
+  securityGroup = "dev_access"
+  securityGroupDesc = "Dev access"
 }
 
 output "dev_ip" {

@@ -9,3 +9,11 @@ variable "sshKey" {
 variable "instance" {
   type = string
 }
+
+variable "securityGroup" {
+  type = string
+}
+
+variable "securityGroupDesc" {
+  type = string
+}
