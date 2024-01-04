@@ -42,6 +42,26 @@ resource "aws_autoscaling_group" "autoscalingGroup" {
   target_group_arns = var.production ? [ aws_lb_target_group.loadBalancerTargetGroup[0].arn ] : []
 }
 
+resource "aws_autoscaling_schedule" "ScheduleToProvideResource" {
+  scheduled_action_name  = "ScheduleToProvideResource"
+  min_size               = 0
+  max_size               = 1
+  desired_capacity       = 1
+  start_time             = timeadd(timestamp(), "10m")
+  recurrence             = "0 10 * * MON-FRI"
+  autoscaling_group_name = aws_autoscaling_group.autoscalingGroup.name
+}
+
+resource "aws_autoscaling_schedule" "ScheduleToRemoveResource" {
+  scheduled_action_name  = "ScheduleToRemoveResource"
+  min_size               = 0
+  max_size               = 1
+  desired_capacity       = 0
+  start_time             = timeadd(timestamp(), "11m")
+  recurrence             = "0 21 * * MON-FRI"
+  autoscaling_group_name = aws_autoscaling_group.autoscalingGroup.name
+}
+
 resource "aws_default_subnet" "subnet_a" {
   availability_zone =  "${var.aws_region}a"
 }
