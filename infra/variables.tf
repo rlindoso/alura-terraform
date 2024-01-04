@@ -17,3 +17,19 @@ variable "securityGroup" {
 variable "securityGroupDesc" {
   type = string
 }
+
+variable "autoscalingGroupName" {
+  type = string
+}
+
+variable "autoscalingGroupMaxSize" {
+  type = number
+}
+
+variable "autoscalingGroupMinSize" {
+  type = number
+}
+
+variable "production" {
+  type = bool  
+}

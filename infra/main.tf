@@ -14,13 +14,15 @@ provider "aws" {
   region  = var.aws_region
 }
 
-resource "aws_instance" "app_test_terraform" {
-  ami           = "ami-024e6efaf93d85776"
+resource "aws_launch_template" "machine" {
+  image_id = "ami-024e6efaf93d85776"
   instance_type = var.instance
   key_name      = var.sshKey
   tags = {
     Name = "Terraform Ansible Pyhton"
   }
+  security_group_names = [var.securityGroup]
+  user_data = var.production ? ("ansible.sh") : ""
 }
 
 resource "aws_key_pair" "chaveSSH" {
@@ -28,6 +30,64 @@ resource "aws_key_pair" "chaveSSH" {
   public_key = file("${var.sshKey}.pub")
 }
 
-output "public_ip" {
-  value = aws_instance.app_test_terraform.public_ip
+resource "aws_autoscaling_group" "autoscalingGroup" {
+  availability_zones = ["${var.aws_region}a", "${var.aws_region}b"]
+  name = var.autoscalingGroupName
+  max_size = var.autoscalingGroupMaxSize
+  min_size = var.autoscalingGroupMinSize
+  launch_template {
+    id = aws_launch_template.machine.id
+    version = "$Latest"
+  }
+  target_group_arns = var.production ? [ aws_lb_target_group.loadBalancerTargetGroup[0].arn ] : []
+}
+
+resource "aws_default_subnet" "subnet_a" {
+  availability_zone =  "${var.aws_region}a"
+}
+
+resource "aws_default_subnet" "subnet_b" {
+  availability_zone =  "${var.aws_region}b"
+}
+
+resource "aws_lb" "loadBalancer" {
+  internal = false
+  subnets = [ aws_default_subnet.subnet_a.id, aws_default_subnet.subnet_b.id ]
+  count = var.production ? 1 : 0
+}
+
+resource "aws_default_vpc" "vpcDefault" {
+  
+}
+
+resource "aws_lb_target_group" "loadBalancerTargetGroup" {
+  name = "TargetMachines"
+  port = "8000"
+  protocol = "HTTP"
+  vpc_id = aws_default_vpc.vpcDefault.id
+  count = var.production ? 1 : 0
+}
+
+resource "aws_lb_listener" "entryLoadBalancer" {
+  load_balancer_arn = aws_lb.loadBalancer[0].arn
+  port = "8000"
+  protocol = "HTTP"
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.loadBalancerTargetGroup[0].arn
+  }
+  count = var.production ? 1 : 0
+}
+
+resource "aws_autoscaling_policy" "autoscalingPolicy" {
+  name = "autoscalingPolicy"
+  autoscaling_group_name = var.autoscalingGroupName
+  policy_type = "TargetTrackingScaling"
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 50.0
+  }
+  count = var.production ? 1 : 0
 }

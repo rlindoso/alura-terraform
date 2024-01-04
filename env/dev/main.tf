@@ -5,8 +5,8 @@ module "aws-dev" {
   sshKey = "IaC-DEV"
   securityGroup = "dev_access"
   securityGroupDesc = "Dev access"
-}
-
-output "dev_ip" {
-  value = module.aws-dev.public_ip
+  autoscalingGroupMinSize = 0
+  autoscalingGroupMaxSize = 1
+  autoscalingGroupName = "Dev"
+  production = false
 }

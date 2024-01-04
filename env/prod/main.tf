@@ -5,8 +5,8 @@ module "aws-prod" {
   sshKey = "IaC-PROD"
   securityGroup = "prod_access"
   securityGroupDesc = "Prod access"
-}
-
-output "prod_ip" {
-  value = module.aws-prod.public_ip
+  autoscalingGroupMinSize = 1
+  autoscalingGroupMaxSize = 5
+  autoscalingGroupName = "Prod"
+  production = true
 }
